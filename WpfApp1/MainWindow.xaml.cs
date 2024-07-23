@@ -53,15 +53,25 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         Books = new();
         using LibraryContext db = new LibraryContext();
         var cb = sender as ComboBox;
-        if (cb is null||cb.SelectedItem is null) return;
+        if (cb is null || cb.SelectedItem is null) return;
         if (s == 1)
         {
             var aut = db.Authors.FirstOrDefault(a => a.FirstName + ' ' + a.LastName == cb.SelectedItem);
             if (aut is null) return;
-            var collection = db.Books.Where(b => b.IdAuthor == aut.Id);
-            if (collection.Count() < 1) return;
-            foreach (var l in collection)
-                Books.Add(l);
+            Books = db.Books.Where(b => b.IdAuthor == aut.Id).ToList();
+        }
+        else if (s == 2)
+        {
+            var theme = db.Themes.FirstOrDefault(t => t.Name == cb.SelectedItem);
+            if (theme is null) return;
+            Books=db.Books.Where(b=>b.IdThemes==theme.Id).ToList();
+        }
+
+        else
+        {
+            var category=db.Categories.FirstOrDefault(c=>c.Name==cb.SelectedItem);
+            if (category is null) return;
+            Books=db.Books.Where(b=>b.IdCategory==category.Id).ToList();
         }
     }
 }
